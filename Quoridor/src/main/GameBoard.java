@@ -8,11 +8,12 @@ import Std.StdOut;
 
 public class GameBoard {
 
-	static final int DIM = 9;
+	public static final int DIM = 9;
 
 	public Tile[][] board;
 	public AiPlayer[] players;
 	public int currentPlayerIndex;
+	public static int winningPlayer;
 
 	// creates a new gameboard with all players being SimplePlayer
 	public GameBoard(int nPlayers) {
@@ -31,6 +32,7 @@ public class GameBoard {
 
 	public GameBoard() {
 		currentPlayerIndex = 0;
+		winningPlayer = Integer.MAX_VALUE;
 		board = new Tile[DIM][DIM];
 		for (int i = 0; i < DIM; i++) {
 			for (int j = 0; j < DIM; j++) {
@@ -88,6 +90,7 @@ public class GameBoard {
 	}
 
 	public void playMove(Move move) {
+		move.echo();
 		move.playMove(this);
 	}
 	
@@ -95,6 +98,7 @@ public class GameBoard {
 		AiPlayer currentPlayer = players[currentPlayerIndex];
 		Move m = currentPlayer.getNextMove();
 		playMove(m);
+		if(currentPlayer.playerWon()) winningPlayer = currentPlayerIndex;
 		currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
 	}
 
@@ -103,24 +107,28 @@ public class GameBoard {
 
 		Tile currentTile = this.board[player.x][player.y];
 
-		StdOut.println("Generating moves" + currentTile.x + "," + currentTile.y);
+		//StdOut.println("Generating moves" + currentTile.x + "," + currentTile.y);
 
 		// generate player moves change to add the moves in the DLS itself
 		ArrayList<Tile> possibleTiles = new ArrayList<>();
 		depthLimitedSearch(currentTile, 1, player, possibleTiles);
 		for (Tile t : possibleTiles) {
 			moves.add(new PlayerMove(player, t.x, t.y));
-			System.out.println("Tile added, x:" + t.x + " :" + t.y);
+			//System.out.println("Tile added, x:" + t.x + " :" + t.y);
 		}
 
-		// generate all possible wall moves
-		for(int i = 0 ; i < DIM; i++) {
-			for(int j = 0; j < DIM; j++) {
-				if(board[i][j].hasHorizontalMove()) moves.add(new WallMove(player, i, j, WallMove.HORIZONTAL));
-				if(board[i][j].hasVerticalMove()) moves.add(new WallMove(player, i, j, WallMove.VERTICAL));
+		if (player.remainingWalls > 0) {
+			// generate all possible wall moves
+			for (int i = 0; i < DIM; i++) {
+				for (int j = 0; j < DIM; j++) {
+					if (board[i][j].hasHorizontalMove())
+						moves.add(new WallMove(player, i, j,
+								WallMove.HORIZONTAL));
+					if (board[i][j].hasVerticalMove())
+						moves.add(new WallMove(player, i, j, WallMove.VERTICAL));
+				}
 			}
 		}
-		
 		StdOut.println("Generated " + moves.size() + " moves");
 		
 		Move[] m = new Move[moves.size()];
