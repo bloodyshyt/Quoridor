@@ -45,7 +45,7 @@ public class WallMove implements Move {
 
 	@Override
 	public void echo() {
-		StdOut.println("Wallmove: at (" + x + "," + y + ") " + ((wallOrientation == HORIZONTAL) ? "Horizontal" : "Vetical") );
+		StdOut.println("Wallmove: P" + player.playerNo +  " at (" + x + "," + y + ") " + ((wallOrientation == HORIZONTAL) ? "Horizontal" : "Vetical") );
 	}
 
 }

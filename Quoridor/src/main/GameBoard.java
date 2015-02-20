@@ -4,23 +4,25 @@ import java.util.ArrayList;
 
 import Player.AiPlayer;
 import Player.SimplePlayer;
+import Player.testPlayer1;
 import Std.StdOut;
 
 public class GameBoard {
 
-	static final int DIM = 9;
+	public static final int DIM = 9;
 
 	public Tile[][] board;
 	public AiPlayer[] players;
 	public int currentPlayerIndex;
+	public int winningPlayer;
 
 	// creates a new gameboard with all players being SimplePlayer
 	public GameBoard(int nPlayers) {
 		this();
 		players = new AiPlayer[nPlayers];
 		if (nPlayers == 2) {
-			players[0] = new SimplePlayer(this, DIM / 2, DIM - 1, 0);
-			players[1] = new SimplePlayer(this, DIM / 2, 0, 1);
+			players[0] = new testPlayer1(this, DIM / 2, DIM - 1, 0, 2);
+			players[1] = new testPlayer1(this, DIM / 2, 0, 1, 2);
 		}
 	}
 
@@ -31,6 +33,7 @@ public class GameBoard {
 
 	public GameBoard() {
 		currentPlayerIndex = 0;
+		winningPlayer = Integer.MAX_VALUE;
 		board = new Tile[DIM][DIM];
 		for (int i = 0; i < DIM; i++) {
 			for (int j = 0; j < DIM; j++) {
@@ -42,6 +45,8 @@ public class GameBoard {
 	// returns a deep copy of gameboard
 	public GameBoard(GameBoard G) {
 		this();
+		this.currentPlayerIndex = G.currentPlayerIndex;
+		this.players = G.players;
 		// TODO decide on player implementation
 		// iterate through all tiles and copy contents in
 		for (int i = 0; i < DIM; i++) {
@@ -49,10 +54,10 @@ public class GameBoard {
 				Tile newTile = this.board[i][j];
 				Tile oldTile = G.board[i][j];
 				for (int a = 0; a < 4; a++) {
-					if (oldTile.adj[i] == null)
-						newTile.adj[i] = null;
+					if (oldTile.adj[a] == null)
+						newTile.adj[a] = null;
 					else
-						newTile.adj[i] = this.board[oldTile.adj[i].x][oldTile.adj[i].y];
+						newTile.adj[a] = this.board[oldTile.adj[a].x][oldTile.adj[a].y];
 				}
 			}
 		}
@@ -88,13 +93,18 @@ public class GameBoard {
 	}
 
 	public void playMove(Move move) {
+		//move.echo();
 		move.playMove(this);
 	}
-	
+
 	public void playTurn() {
 		AiPlayer currentPlayer = players[currentPlayerIndex];
 		Move m = currentPlayer.getNextMove();
+		m.echo();
 		playMove(m);
+		if (currentPlayer.playerWon())
+			winningPlayer = currentPlayerIndex;
+		// shift to the next player
 		currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
 	}
 
@@ -103,28 +113,34 @@ public class GameBoard {
 
 		Tile currentTile = this.board[player.x][player.y];
 
-		StdOut.println("Generating moves" + currentTile.x + "," + currentTile.y);
+		// StdOut.println("Generating moves" + currentTile.x + "," +
+		// currentTile.y);
 
 		// generate player moves change to add the moves in the DLS itself
 		ArrayList<Tile> possibleTiles = new ArrayList<>();
 		depthLimitedSearch(currentTile, 1, player, possibleTiles);
 		for (Tile t : possibleTiles) {
 			moves.add(new PlayerMove(player, t.x, t.y));
-			System.out.println("Tile added, x:" + t.x + " :" + t.y);
+			// System.out.println("Tile added, x:" + t.x + " :" + t.y);
 		}
 
-		// generate all possible wall moves
-		for(int i = 0 ; i < DIM; i++) {
-			for(int j = 0; j < DIM; j++) {
-				if(board[i][j].hasHorizontalMove()) moves.add(new WallMove(player, i, j, WallMove.HORIZONTAL));
-				if(board[i][j].hasVerticalMove()) moves.add(new WallMove(player, i, j, WallMove.VERTICAL));
+		if (player.remainingWalls > 0) {
+			// generate all possible wall moves
+			for (int i = 0; i < DIM; i++) {
+				for (int j = 0; j < DIM; j++) {
+					if (board[i][j].hasHorizontalMove())
+						moves.add(new WallMove(player, i, j,
+								WallMove.HORIZONTAL));
+					if (board[i][j].hasVerticalMove())
+						moves.add(new WallMove(player, i, j, WallMove.VERTICAL));
+				}
 			}
 		}
-		
-		StdOut.println("Generated " + moves.size() + " moves");
-		
+		//StdOut.println("Generated " + moves.size() + " moves");
+
 		Move[] m = new Move[moves.size()];
-		for(int i = 0; i < m.length; i++) m[i] = moves.get(i);
+		for (int i = 0; i < m.length; i++)
+			m[i] = moves.get(i);
 
 		return m;
 	}
@@ -134,18 +150,19 @@ public class GameBoard {
 		if (depth == 0) {
 			// check if there is an enemy piece
 			boolean hasEnemy = false;
-			for(AiPlayer p : players) {
-				if(p != player && p.x == current.x && p.y == current.y) hasEnemy = true;
+			for (AiPlayer p : players) {
+				if (p != player && p.x == current.x && p.y == current.y)
+					hasEnemy = true;
 			}
-			
-			if(hasEnemy) {
-				// go one more round 
+
+			if (hasEnemy) {
+				// go one more round
 				depthLimitedSearch(current, 1, player, tiles);
 			} else {
-				if(!tiles.contains(current)) tiles.add(current);
+				if (!tiles.contains(current))
+					tiles.add(current);
 			}
-		}
-		else {
+		} else {
 			for (Tile t : current.adj) {
 				if (t != null) {
 					depthLimitedSearch(t, depth - 1, player, tiles);
