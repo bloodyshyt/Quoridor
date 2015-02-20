@@ -48,14 +48,15 @@ public class MovesToNextColumn implements Feature {
 	private int _scanInDirection(int goalDirection, int directionToScan) {
 		int steps = 1;
 		Tile currentTile = G.board[player.x][player.y];
-		Tile swap = currentTile;
 		
-		for(Tile t : swap.adj) StdOut.println(t + "");
-		//StdOut.println("Adj:" + swap.adj[Tile.UP].x + "," + swap.adj[Tile.UP].y);
-		
-		while(swap.adj[goalDirection] == null) {
-			if(swap.adj[directionToScan] == null) return Integer.MIN_VALUE;
-			else swap = swap.adj[directionToScan];
+		StdOut.println("Scanning in direction: " + directionToScan + " Goal: " + goalDirection);
+		for(int i = 0; i < 4; i++) StdOut.println(i + ":" + currentTile.adj[i]);
+		while(currentTile.adj[goalDirection] == null) {
+			if(currentTile.adj[directionToScan] == null) {
+				StdOut.println("Reached a dead end");
+				return 0;
+			}
+			else currentTile = currentTile.adj[directionToScan];
 			steps++;
 		}
 		
