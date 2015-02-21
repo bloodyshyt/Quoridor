@@ -58,7 +58,7 @@ public class testPlayer1 extends AiPlayer {
 		float currentScore;
 		Move bestMove = null;
 
-		if (moves.length == 0 || depth == 0) {
+		if (moves.length == 0 || depth == 0 || moves[0] == null) {
 			bestScore = evaluateBoard(player);
 		}
 

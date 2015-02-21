@@ -129,16 +129,27 @@ public class MainActivity {
 		MainActivity main = new MainActivity();
 		main.draw();
 		
-		// test the shortest path search
-		int[] coords = main.board.BFS(main.board.players[0]);
-		StdOut.println("Next step is (" + coords[0] + "," + coords[1] + ")");
+		// test the illegal move checking
+//		WallMove w1 = new WallMove(main.board.players[0], 4, 0, WallMove.VERTICAL);
+//		WallMove w2 = new WallMove(main.board.players[0], 5, 1, WallMove.HORIZONTAL);
+//		WallMove w3 = new WallMove(main.board.players[0], 6, 0, WallMove.VERTICAL);
+//		main.playMove(w1);
+//		main.playMove(w2);
+//		//main.playMove(w3);
+//		int[] coords = main.board.BFS(main.board.players[1]);
+//		if(coords == null) StdOut.println("Illegal move!");
 		
+		// test the shortest path search
 //		PlayerMove m1 = new PlayerMove(main.board.players[1], 8, 3);
 //		WallMove w1 = new WallMove(main.board.players[0], 8, 3, WallMove.HORIZONTAL);
 //		WallMove w2 = new WallMove(main.board.players[0], 8, 2, WallMove.VERTICAL);
 //		main.playMove(w1);
 //		main.playMove(w2);
 //		main.playMove(m1);
+//		
+//		int[] coords = main.board.BFS(main.board.players[1]);
+//		StdOut.println("Next step is (" + coords[0] + "," + coords[1] + ")");
+		
 //		StdOut.println("Moves to next column P1: " + new MovesToNextColumn().evaluate(main.board, main.board.players[1]));
 //		StdOut.println("Oppo Steps to next column P0: " + new opponentMovesToNextColumn().evaluate(main.board, main.board.players[0]));
 //		// test the move
@@ -171,23 +182,23 @@ public class MainActivity {
 
 		// lets try for 20 turns!
 
-//		for (int i = 0; i < 1000; i++) {
-//			StdOut.println("Turn " + i);
-//			main.board.playTurn();
-//			StdDraw.clear();
-//			main.draw();
-//			if (main.board.winningPlayer != Integer.MAX_VALUE) {
-//				StdOut.println("Player " + main.board.winningPlayer
-//						+ " has won after " + i + " turns");
-//				break;
-//			}
-//			try {
-//				Thread.sleep(100);
-//				// 1000 milliseconds is one second.
-//			} catch (InterruptedException ex) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
+		for (int i = 0; i < 1000; i++) {
+			StdOut.println("Turn " + i);
+			main.board.playTurn();
+			StdDraw.clear();
+			main.draw();
+			if (main.board.winningPlayer != Integer.MAX_VALUE) {
+				StdOut.println("Player " + main.board.winningPlayer
+						+ " has won after " + i + " turns");
+				break;
+			}
+			try {
+				Thread.sleep(100);
+				// 1000 milliseconds is one second.
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
 		
 
 		// test the evaluation features

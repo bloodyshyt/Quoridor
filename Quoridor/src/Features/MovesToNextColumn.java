@@ -66,7 +66,7 @@ public class MovesToNextColumn implements Feature {
 				if(t != null && steps[t.x][t.y] == -1) {
 					steps[t.x][t.y] = steps[v.x][v.y] + 1;
 					if(t.x == goal_x || t.y == goal_y) {
-						StdOut.println("Moves to next column: " + steps[t.x][t.y]);
+						//StdOut.println("Moves to next column: " + steps[t.x][t.y]);
 						return steps[t.x][t.y]; 
 					}
 					Q.add(t);
