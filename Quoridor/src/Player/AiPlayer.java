@@ -1,6 +1,5 @@
 package Player;
 
-import java.rmi.server.RemoteObjectInvocationHandler;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,10 +15,8 @@ public abstract class AiPlayer {
 	public int x, y;
 	public int win_x, win_y;
 	public int remainingWalls;
-	public GameBoard board;
 
-	public AiPlayer(GameBoard board, int x, int y, int playerNo) {
-		this.board = board;
+	public AiPlayer(int x, int y, int playerNo) {
 		this.x = x;
 		this.y = y;
 		this.playerNo = playerNo;
@@ -46,6 +43,6 @@ public abstract class AiPlayer {
 	}
 
 	// abstract method to get the next move
-	public abstract Move getNextMove();
-
+	public abstract Move getNextMove(GameBoard G);
+	
 }

@@ -2,6 +2,7 @@ package Features;
 
 import main.GameBoard;
 import Player.AiPlayer;
+import Std.StdOut;
 
 public class PositionDifference implements Feature {
 	// returns difference between player and opponent(s) from respective
@@ -13,13 +14,13 @@ public class PositionDifference implements Feature {
 	@Override
 	public float evaluate(GameBoard G, AiPlayer player) {
 		int sumOfOpponent = 0;
-		for (AiPlayer p : G.players) {
-			if (p != player)
-				sumOfOpponent += positionFromBaseline.evaluate(G, player);
+		for (int i = 0; i < G.players.length; i++) {
+			if (i != player.playerNo) {
+				sumOfOpponent += positionFromBaseline.evaluate(G, G.players[i]);
+			}
 		}
 
-		return (sumOfOpponent - (G.players.length - 1)
-				* positionFromBaseline.evaluate(G, player));
+		return ((G.players.length - 1) * positionFromBaseline.evaluate(G, player) - sumOfOpponent);
 	}
 
 }

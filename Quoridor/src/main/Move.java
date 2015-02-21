@@ -7,6 +7,8 @@ public interface Move {
 	 */
 	public void playMove(GameBoard G);
 	
+	public void undoMove(GameBoard G);
+	
 	public void echo();
 	
 }

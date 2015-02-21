@@ -7,14 +7,14 @@ import main.Move;
 
 public class SimplePlayer extends AiPlayer {
 
-	public SimplePlayer(GameBoard board, int x, int y, int playerNo) {
-		super(board, x, y, playerNo);
+	public SimplePlayer(int x, int y, int playerNo) {
+		super(x, y, playerNo);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public Move getNextMove() {
-		Move[] m = board.generateMoves(this);
+	public Move getNextMove(GameBoard G) {
+		Move[] m = G.generateMoves(this);
 		shuffleArray(m);
 		return m[0];
 	}
@@ -29,6 +29,11 @@ public class SimplePlayer extends AiPlayer {
 			ar[index] = ar[i];
 			ar[i] = a;
 		}
+	}
+
+	@Override
+	public AiPlayer clone() {
+		return new SimplePlayer(x, y, playerNo);
 	}
 
 }

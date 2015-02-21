@@ -29,18 +29,20 @@ public class Tile {
 		return false;
 	}
 
-	public boolean hasVerticalMove() {
-		if (adj[UP] != null && adj[DOWN] != null)
-			return true;
-		return false;
+	public boolean hasWallMove() {
+		// traverse in a clockwise fashion
+		Tile t = this.adj[LEFT];
+		if(t == null) return false;
+		t = t.adj[UP];
+		if(t == null) return false;
+		t = t.adj[RIGHT];
+		if(t == null) return false;
+		if(t.adj[DOWN] == this) return true;
+		else return false;
+		
 	}
 
-	public boolean hasHorizontalMove() {
-		if (adj[LEFT] != null && adj[RIGHT] != null)
-			return true;
-		return false;
-	}
-
+	
 	// TODO implement a clone method
 
 }

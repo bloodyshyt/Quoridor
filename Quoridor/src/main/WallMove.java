@@ -1,4 +1,5 @@
 package main;
+
 import Player.AiPlayer;
 import Std.StdOut;
 
@@ -20,32 +21,65 @@ public class WallMove implements Move {
 
 	@Override
 	public void playMove(GameBoard G) {
-		
+
 		player.remainingWalls--;
 
-		Tile t = G.board[x][y];
+		Tile t1 = G.board[x][y];
+		Tile t2 = G.board[x - 1][y];
+		Tile t3 = G.board[x - 1][y + 1];
+		Tile t4 = G.board[x][y + 1];
 
 		if (wallOrientation == HORIZONTAL) {
+			t1.adj[Tile.UP] = null;
+			t4.adj[Tile.DOWN] = null;
+			t2.adj[Tile.UP] = null;
+			t3.adj[Tile.DOWN] = null;
 
-			Tile left = G.board[t.x - 1][t.y];
-			Tile right = G.board[t.x + 1][t.y];
-			t.adj[Tile.LEFT] = null;
-			t.adj[Tile.RIGHT] = null;
-			left.adj[Tile.RIGHT] = null;
-			right.adj[Tile.LEFT] = null;
 		} else {
-			Tile up = G.board[t.x][t.y + 1];
-			Tile down = G.board[t.x][t.y - 1];
-			t.adj[Tile.UP] = null;
-			t.adj[Tile.DOWN] = null;
-			up.adj[Tile.DOWN] = null;
-			down.adj[Tile.UP] = null;
+			t1.adj[Tile.LEFT] = null;
+			t2.adj[Tile.RIGHT] = null;
+			t4.adj[Tile.LEFT] = null;
+			t3.adj[Tile.RIGHT] = null;
 		}
 	}
 
 	@Override
 	public void echo() {
-		StdOut.println("Wallmove: P" + player.playerNo +  " at (" + x + "," + y + ") " + ((wallOrientation == HORIZONTAL) ? "Horizontal" : "Vetical") );
+		StdOut.println("Wallmove: P"
+				+ player.playerNo
+				+ " at ("
+				+ x
+				+ ","
+				+ y
+				+ ") "
+				+ ((wallOrientation == HORIZONTAL) ? "Horizontal " : "Vetical ")
+				+ player.remainingWalls + " walls left");
+	}
+
+	@Override
+	public void undoMove(GameBoard G) {
+
+		player.remainingWalls++;
+		G.wallMoves.remove(this);
+
+		Tile t1 = G.board[x][y];
+		Tile t2 = G.board[x - 1][y];
+		Tile t3 = G.board[x - 1][y + 1];
+		Tile t4 = G.board[x][y + 1];
+
+		if (wallOrientation == HORIZONTAL) {
+			t1.adj[Tile.UP] = t4;
+			t4.adj[Tile.DOWN] = t1;
+			t2.adj[Tile.UP] = t3;
+			t3.adj[Tile.DOWN] = t2;
+
+		} else {
+			t1.adj[Tile.LEFT] = t2;
+			t2.adj[Tile.RIGHT] = t1;
+			t4.adj[Tile.LEFT] = t3;
+			t3.adj[Tile.RIGHT] = t4;
+		}
+
 	}
 
 }
