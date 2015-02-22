@@ -3,16 +3,17 @@ package Player;
 import java.util.Random;
 
 import main.GameBoard;
-import main.MainActivity;
 import main.Move;
 import Features.Feature;
 import Features.MovesToNextColumn;
+import Features.OpponentShortPathToGoal;
 import Features.PositionDifference;
 import Features.PositionFromBaseline;
+import Features.ShortPathToGoal;
 import Features.opponentMovesToNextColumn;
 import Std.StdOut;
 
-public class basePlayer extends AiPlayer {
+public class testPlayer3 extends AiPlayer {
 
 	Feature[] features;
 	float[] weights;
@@ -24,25 +25,21 @@ public class basePlayer extends AiPlayer {
 
 	private static Random random;
 
-	public basePlayer(int playerNo, int depth, int[] features) {
-		super(4, (playerNo == 0) ? 8 : 0, playerNo);
+	public testPlayer3(int x, int y, int playerNo, int depth) {
+		super(x, y, playerNo);
 		this.depth = depth;
+
+		random = new Random(System.currentTimeMillis());
 
 		PositionFromBaseline f1 = new PositionFromBaseline();
 		PositionDifference f2 = new PositionDifference();
 		MovesToNextColumn f3 = new MovesToNextColumn();
 		opponentMovesToNextColumn f4 = new opponentMovesToNextColumn();
-		Feature[] f = new Feature[] {null, f1, f2, f3, f4};
-		float[] w = new float[] {0f, 0.6f, 0.6001f,14.45f, 6.52f};
-		
-		random = new Random(System.currentTimeMillis());
-
-		this.features = new Feature[features.length];
-		this.weights = new float[features.length];
-		for(int i = 0; i < features.length; i++)  {
-			this.features[i] = f[features[i]];
-			this.weights[i] = w[features[i]];
-		}
+		ShortPathToGoal f5 = new ShortPathToGoal();
+		OpponentShortPathToGoal f6 = new OpponentShortPathToGoal();
+		features = new Feature[] {f5, f6};
+		weights = new float[] {20.0f, 8.23f};
+				
 
 	}
 
@@ -51,7 +48,7 @@ public class basePlayer extends AiPlayer {
 		board = G;
 		this.players = G.players;
 		Object[] stuff = (Object[]) minimax(this, depth);
-		//StdOut.println("Final score of " + stuff[1]);
+		StdOut.println("Final score of " + stuff[1]);
 		return (Move) stuff[0];
 	}
 
@@ -66,14 +63,13 @@ public class basePlayer extends AiPlayer {
 		Move bestMove = null;
 
 		if (moves.length == 0 || depth == 0) {
-			bestScore = evaluateBoard(player, this.board);
+			bestScore = evaluateBoard(player);
 		}
 
 		else {
 			for (Move move : moves) {
 				// try move for this player
 				board.playMove(move);
-				//MainActivity.getInstance().update();
 				if (player.playerNo == this.playerNo) {
 					currentScore = (float) minimax(
 							players[(player.playerNo + 1) % players.length],
@@ -94,21 +90,19 @@ public class basePlayer extends AiPlayer {
 				}
 
 				board.undoMove(move);
-				//MainActivity.getInstance().update();
 			}
 		}
 		return new Object[] { bestMove, bestScore };
 	}
 
-	public float evaluateBoard(AiPlayer player, GameBoard board) {
+	private float evaluateBoard(AiPlayer player) {
 		float score = 0;
 		for (int i = 0; i < features.length; i++) {
 			score += weights[i] * features[i].evaluate(board, player);
 		}
-		score = (float) (score + 1 * random.nextFloat());
+		score = (float) (score + random.nextFloat());
 		//StdOut.println(score + "");
 		return score;
 	}
-	
 
 }

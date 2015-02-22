@@ -25,8 +25,8 @@ public class GameBoard {
 		this();
 		players = new AiPlayer[nPlayers];
 		if (nPlayers == 2) {
-			players[0] = new testPlayer1(DIM / 2, DIM - 1, 0, 2);
-			players[1] = new testPlayer1(DIM / 2, 0, 1, 2);
+			players[0] = new testPlayer1(DIM / 2, DIM - 1, 0, 4);
+			players[1] = new testPlayer1(DIM / 2, 0, 1, 4);
 
 		}
 	}
@@ -121,7 +121,7 @@ public class GameBoard {
 		AiPlayer currentPlayer = players[currentPlayerIndex];
 		Move m = currentPlayer.getNextMove(this);
 		playMove(m);
-		m.echo();
+		//m.echo();
 		if (currentPlayer.playerWon())
 			winningPlayer = currentPlayerIndex;
 		// shift to the next player
@@ -262,5 +262,13 @@ public class GameBoard {
 			return new int[] { t.x, t.y, nSteps++ };
 		}
 
+	}
+
+	public boolean gameOver() {
+		for(AiPlayer p : players) {
+			if(p.win_x == p.x || p.win_y == p.y)
+				return true;
+		}
+		return false;
 	}
 }

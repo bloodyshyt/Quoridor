@@ -30,13 +30,13 @@ public abstract class AiPlayer {
 		if(x == 0) win_x = GameBoard.DIM - 1;
 		if(x == GameBoard.DIM - 1) win_x = 0;
 		
-		StdOut.println("Player " + playerNo + " at (" + x + "," + y + ") win at (" + win_x + "," + win_y + ")");
+		//StdOut.println("Player " + playerNo + " at (" + x + "," + y + ") win at (" + win_x + "," + win_y + ")");
 
 	}
 	
 	public boolean playerWon() {
 		if(x == win_x || y == win_y)  {
-			StdOut.println("Winning of condition of (" + win_x + "," + win_y + ") meet at (" + x + "," + y + ")");
+			//StdOut.println("Winning of condition of (" + win_x + "," + win_y + ") meet at (" + x + "," + y + ")");
 			return true;
 		}
 		return false;
