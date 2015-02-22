@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import Player.AiPlayer;
+import Player.basePlayer;
 import Player.testPlayer1;
 import Player.testPlayer2;
 
@@ -28,6 +29,14 @@ public class GameBoard {
 			players[1] = new testPlayer1(DIM / 2, 0, 1, 2);
 
 		}
+	}
+	
+	public GameBoard(int[][] playerStates) {
+		this();
+		players = new AiPlayer[2];
+		players[0] = new basePlayer(0, 2, playerStates[0]);
+		players[1] = new basePlayer(1, 2, playerStates[1]);
+		
 	}
 
 	public GameBoard(AiPlayer[] players) {
@@ -144,8 +153,31 @@ public class GameBoard {
 					}
 				}
 			}
-
-			depthLimitedSearch(currentTile, 1, player, possibleTiles);
+			
+			// generate player moves
+			for(int i = 0; i < 4; i++) {
+				if(currentTile.adj[i] != null) {
+					Tile t = currentTile.adj[i];
+					// check if there is a pawn
+					if(tileHasPawn(t)) {
+						// go again in the same direction
+						if(t.adj[i] != null)
+							possibleTiles.add(t.adj[i]);
+						else {
+							// check in the two side directions
+							int d1 = (4 + i + 1) % 4;
+							int d2 = (4 + i - 1) % 4;
+							if(t.adj[d1] != null) 
+								possibleTiles.add(t.adj[d1]);
+							if(t.adj[d2] != null && !possibleTiles.contains(t.adj[d2])) 
+								possibleTiles.add(t.adj[d2]);
+						}
+					} else {
+						// add as per normal
+						possibleTiles.add(t);
+					}
+				}
+			}
 			for (Tile t : possibleTiles) {
 				moves.add(new PlayerMove(player, t.x, t.y));
 				// System.out.println("Tile added, x:" + t.x + " :" + t.y);
@@ -165,6 +197,14 @@ public class GameBoard {
 		return m;
 	}
 	
+	private boolean tileHasPawn(Tile tile) {
+		for(AiPlayer p : players) {
+			if(p.x == tile.x && p.y == tile.y)
+				return true;
+		}
+		return false;
+	}
+
 	public boolean isMoveLegal(Move move) {
 		this.playMove(move);
 		boolean legal = true;
@@ -223,32 +263,4 @@ public class GameBoard {
 		}
 
 	}
-
-	private void depthLimitedSearch(Tile current, int depth, AiPlayer player,
-			ArrayList<Tile> tiles) {
-		if (depth == 0) {
-			// check if there is an enemy piece
-			boolean hasEnemy = false;
-			for (AiPlayer p : players) {
-				if (p != player && p.x == current.x && p.y == current.y)
-					hasEnemy = true;
-			}
-
-			if (hasEnemy) {
-				// go one more round
-				depthLimitedSearch(current, 1, player, tiles);
-			} else {
-				if (!tiles.contains(current))
-					tiles.add(current);
-			}
-		} else {
-			for (Tile t : current.adj) {
-				if (t != null) {
-					depthLimitedSearch(t, depth - 1, player, tiles);
-				}
-			}
-		}
-
-	}
-
 }
